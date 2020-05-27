@@ -102,7 +102,6 @@ def recommendations(artist_name, track_name):
     prediction = model.kneighbors(audio_feats_scaled)
 
     similar_songs_index = prediction[1][0][1:].tolist()
-    similar_song_ids = []
     recommendations_list = []
     artist_list = []
     title_list = []
@@ -131,9 +130,7 @@ def recommendations(artist_name, track_name):
         album_result = spotify_result['tracks']['items'][0]['album']['images'][0]['url']
 
         recommendations_list.append({"title": title, "album_name": album_name, "artist": artist,
-                                     "album_art": album_result})
-
-        similar_song_ids.append(song_id)
+                                     "album_art": album_result, "song_id": song_id})
 
         if len(recommendations_list) > 4:
             break
