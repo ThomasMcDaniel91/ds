@@ -63,7 +63,7 @@ def knn_predictor(audio_feats):
     audio_feats_scaled = scaler.transform([audio_feats])
 
     ## Nearest Neighbors model
-    nn = NearestNeighbors(n_neighbors=6, algorithm='kd_tree')
+    nn = NearestNeighbors(n_neighbors=21, algorithm='kd_tree')
     nn.fit(spotify_scaled)
 
     dump(nn, 'test_model.joblib', compress=True)

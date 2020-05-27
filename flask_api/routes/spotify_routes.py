@@ -102,15 +102,28 @@ def recommendations(artist_name, track_name):
     prediction = model.kneighbors(audio_feats_scaled)
 
     similar_songs_index = prediction[1][0][1:].tolist()
+    similar_song_ids = []
     recommendations_list = []
+    artist_list = []
+    title_list = []
 
     for i, value in enumerate(similar_songs_index):
         query = f'''SELECT * FROM tracks WHERE index={value}'''
         pg_curs.execute(query)
         result = pg_curs.fetchall()
 
+        song_id = result[0][7]
+
         artist = result[0][2]
         title = result[0][13]
+
+        if i != 0:  # don't run on first iteration
+            if title in title_list:
+                if artist in artist_list:  # if both title and artist already exist as a prediction, this is a duplicate, lets skip it.
+                    continue
+
+        artist_list.append(result[0][2])
+        title_list.append(result[0][13])
 
         spotify_result = sp.search(q=f'artist: {artist} track: {title}')
 
@@ -119,6 +132,11 @@ def recommendations(artist_name, track_name):
 
         recommendations_list.append({"title": title, "album_name": album_name, "artist": artist,
                                      "album_art": album_result})
+
+        similar_song_ids.append(song_id)
+
+        if len(recommendations_list) > 4:
+            break
 
     pg_curs.close()
     pg_conn.close()
