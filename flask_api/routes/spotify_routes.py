@@ -95,10 +95,10 @@ def recommendations(artist_name, track_name):
 
     features_df = pd.DataFrame(features, index=[0])
 
-    scaler = load(r'C:\Users\User\PycharmProjects\LambdaAssignments\unit3-build\ds\scaler.joblib')
+    scaler = load('scaler.joblib')
     audio_feats_scaled = scaler.transform(features_df)
 
-    model = load(r'C:\Users\User\PycharmProjects\LambdaAssignments\unit3-build\ds\test_model.joblib')
+    model = load('test_model.joblib')
     prediction = model.kneighbors(audio_feats_scaled)
 
     similar_songs_index = prediction[1][0][1:].tolist()
