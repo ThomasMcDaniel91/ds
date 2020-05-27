@@ -3,6 +3,8 @@ from flask_api.services.spotify_service import spotify_api
 from dotenv import load_dotenv
 import os
 import psycopg2
+import pandas as pd
+from joblib import load
 
 spotify_routes = Blueprint("spotify_routes", __name__)
 
@@ -64,3 +66,61 @@ def dummy_data(): #just some dummy data to get working with.
             }
   ]
   return jsonify(dummy_list)
+
+
+@spotify_routes.route("/search/<artist_name>/<track_name>", methods=['GET', 'POST'])
+def recommendations(artist_name, track_name):
+    pg_conn = psycopg2.connect(
+        dbname=DB_NAME, user=DB_USER,
+        password=DB_PW, host=DB_HOST
+    )
+    pg_curs = pg_conn.cursor()
+    
+    sp = spotify_api()
+    
+    result = sp.search(q=f'artist: {artist_name} track: {track_name}')
+    result = result['tracks']['items']
+
+    track_id = result[0]['id']
+
+    features = sp.audio_features(track_id)
+    features = features[0]
+
+    ##reorder the features to match expected input for the model
+    features = {'acousticness': features["acousticness"], 'danceability': features["danceability"],
+                'energy': features['energy'], 'instrumentalness': features['instrumentalness'], 'key': features['key'],
+                'liveness': features['liveness'], 'loudness': features['loudness'],
+                'speechiness': features['speechiness'],
+                'tempo': features['tempo'], 'valence': features['valence']}
+
+    features_df = pd.DataFrame(features, index=[0])
+
+    scaler = load('scaler.joblib')
+    audio_feats_scaled = scaler.transform(features_df)
+
+    model = load('test_model.joblib')
+    prediction = model.kneighbors(audio_feats_scaled)
+
+    similar_songs_index = prediction[1][0][1:].tolist()
+    recommendations_list = []
+
+    for i, value in enumerate(similar_songs_index):
+        query = f'''SELECT * FROM tracks WHERE index={value}'''
+        pg_curs.execute(query)
+        result = pg_curs.fetchall()
+
+        artist = result[0][2]
+        title = result[0][13]
+
+        spotify_result = sp.search(q=f'artist: {artist} track: {title}')
+
+        album_name = spotify_result['tracks']['items'][0]['album']['name']
+        album_result = spotify_result['tracks']['items'][0]['album']['images'][0]['url']
+
+        recommendations_list.append({"title": title, "album_name": album_name, "artist": artist,
+                                     "album_art": album_result})
+
+    pg_curs.close()
+    pg_conn.close()
+    
+    return jsonify(recommendations_list)

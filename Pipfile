@@ -12,6 +12,8 @@ gunicorn = "*"
 psycopg2-binary = "*"
 python-dotenv = "*"
 spotipy = "*"
+pandas = "*"
+scikit-learn = "*"
 
 [requires]
 python_version = "3.7"

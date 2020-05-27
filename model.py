@@ -56,7 +56,10 @@ def knn_predictor(audio_feats):
   prediction = nn.kneighbors(audio_feats_scaled)
 
   # Get the indexes of the list of similar songs
-  similar_songs_index = prediction[1][0][1:].tolist()
+  if prediction[0][0][0] == 0.0:
+    similar_songs_index = prediction[1][0][1:].tolist()
+  else:
+    similar_songs_index = prediction[1][0][:5].tolist()
   
   # Create an empty list to store simlar song names
   similar_song_ids = []
