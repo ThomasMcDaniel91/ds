@@ -2,11 +2,7 @@ import chart_studio
 import chart_studio.plotly as py
 import chart_studio.tools as tls
 import random
-from dotenv import load_dotenv
-import os
 
-username = os.getenv("CHART_USERNAME")
-api_key = os.getenv("CHART_API_KEY")
 
 def visualize_audio_similarities(df, cs_username, cs_api_key, similar_song_ids):
 

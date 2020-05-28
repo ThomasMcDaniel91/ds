@@ -16,6 +16,9 @@ DB_USER = os.getenv("DB_USER")
 DB_PW = os.getenv("DB_PW")
 DB_HOST = os.getenv("DB_HOST")
 
+username = os.getenv("CHART_USERNAME")
+api_key = os.getenv("CHART_API_KEY")
+
 @spotify_routes.route("/")
 def index(): #test our DB connection and verify we can pull data out in json format.
     pg_conn = psycopg2.connect(
