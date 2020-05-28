@@ -112,6 +112,7 @@ def recommendations(artist_name, track_name):
     recommendations_list = []
     artist_list = []
     title_list = []
+    similar_song_ids = []
 
     for i, value in enumerate(similar_songs_index):
         query = f'''SELECT * FROM tracks WHERE index={value}'''
@@ -132,6 +133,10 @@ def recommendations(artist_name, track_name):
 
         artist_list.append(result[0][2])
         title_list.append(result[0][13])
+
+        similar_song_ids.append(song_id)
+        similar_song_ids.append(title)
+        similar_song_ids.append(artist)
 
         spotify_result = sp.search(q=f'artist: {artist} track: {title}')
 
