@@ -1,6 +1,7 @@
 import chart_studio
 import chart_studio.plotly as py
 import chart_studio.tools as tls
+import plotly.graph_objects as go
 import random
 
 
@@ -146,7 +147,7 @@ def visualize_audio_similarities(df, cs_username, cs_api_key, similar_song_ids):
       font_family="Rockwell",
       ),
       polar = dict(
-          radialaxis = dict(range=[visual_df.values.min(), visual_df.values.max()], showticklabels=True, ticks=''),
+          radialaxis = dict(range=[df.values.min(), df.max()], showticklabels=True, ticks=''),
           angularaxis = dict(showticklabels=True, tickmode='array', tickvals=vals, ticktext=df.columns, ticks='')
       ),
       title={

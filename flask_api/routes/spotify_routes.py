@@ -113,11 +113,16 @@ def recommendations(artist_name, track_name):
     artist_list = []
     title_list = []
     similar_song_ids = []
+    similar_songs_features = []
 
     for i, value in enumerate(similar_songs_index):
         query = f'''SELECT * FROM tracks WHERE index={value}'''
         pg_curs.execute(query)
         result = pg_curs.fetchall()
+
+        list_of_feats = [result[0][1], result[0][3], result[0][5], result[0][8], result[0][9], result[0][10], # retrieve audio features from the fetched query
+                         result[0][11], result[0][16], result[0][17], result[0][18]]
+        similar_songs_features.append(list_of_feats)
 
         song_id = result[0][7]
 
@@ -134,6 +139,7 @@ def recommendations(artist_name, track_name):
         artist_list.append(result[0][2])
         title_list.append(result[0][13])
 
+        # For Kyle's chart function.
         similar_song_ids.append(song_id)
         similar_song_ids.append(title)
         similar_song_ids.append(artist)
@@ -148,6 +154,28 @@ def recommendations(artist_name, track_name):
 
         if len(recommendations_list) > 4:
             break
+
+    column_names = features_df.columns.tolist() # retrieve column names and ordering from manually defined near the start of the route
+
+    audio_feats_scaled_df = pd.DataFrame(audio_feats_scaled, columns=column_names)
+
+    similar_feats_scaled = scaler.transform(similar_songs_features)
+    similar_feats_scaled_df = pd.DataFrame(similar_feats_scaled, columns=column_names)
+
+    similar_feats_averaged = []
+
+    for col in column_names:
+        avg = similar_feats_scaled_df[col].mean()
+        similar_feats_averaged.append(avg)
+
+    similar_feats_averaged_df = pd.DataFrame([similar_feats_averaged], columns=column_names)
+
+    visual_df = pd.concat([audio_feats_scaled_df, similar_feats_averaged_df, similar_feats_scaled_df],
+                          ignore_index=False)
+
+    iframe = visualize_audio_similarities(visual_df, username, api_key, similar_song_ids)
+
+    recommendations_list.append({"iframe": iframe})
 
     pg_curs.close()
     pg_conn.close()
