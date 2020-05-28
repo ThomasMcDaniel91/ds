@@ -82,6 +82,8 @@ def recommendations(artist_name, track_name):
     result = result['tracks']['items']
 
     track_id = result[0]['id']
+    track_name = result[0]['name']
+    artist_name = result[0]['artists'][0]['name']
 
     features = sp.audio_features(track_id)
     features = features[0]
@@ -101,7 +103,8 @@ def recommendations(artist_name, track_name):
     model = load('test_model.joblib')
     prediction = model.kneighbors(audio_feats_scaled)
 
-    similar_songs_index = prediction[1][0][1:].tolist()
+    similar_songs_index = prediction[1][0][:].tolist()
+
     recommendations_list = []
     artist_list = []
     title_list = []
@@ -120,6 +123,8 @@ def recommendations(artist_name, track_name):
             if title in title_list:
                 if artist in artist_list:  # if both title and artist already exist as a prediction, this is a duplicate, lets skip it.
                     continue
+        if artist == f"['{artist_name}']" and title == track_name:
+            continue
 
         artist_list.append(result[0][2])
         title_list.append(result[0][13])
@@ -137,5 +142,5 @@ def recommendations(artist_name, track_name):
 
     pg_curs.close()
     pg_conn.close()
-    
+
     return jsonify(recommendations_list)
