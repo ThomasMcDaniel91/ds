@@ -173,6 +173,8 @@ def recommendations(artist_name, track_name):
     visual_df = pd.concat([audio_feats_scaled_df, similar_feats_averaged_df, similar_feats_scaled_df],
                           ignore_index=False)
 
+    print(username, api_key)
+
     iframe = visualize_audio_similarities(visual_df, username, api_key, similar_song_ids)
 
     recommendations_list.append({"iframe": iframe})
