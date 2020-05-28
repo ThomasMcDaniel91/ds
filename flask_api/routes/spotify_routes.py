@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify
 from flask_api.services.spotify_service import spotify_api
+from flask_api.services.chart_service import visualize_audio_similarities
 from dotenv import load_dotenv
 import os
 import psycopg2
