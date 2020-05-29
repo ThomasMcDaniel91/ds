@@ -182,15 +182,12 @@ def recommendations(artist_name, track_name):
         [audio_feats_scaled_df, similar_feats_averaged_df, similar_feats_scaled_df, similar_song_features_unscaled,
          audio_feats_df], ignore_index=True)
 
-    print(visual_df)
-    print(similar_song_ids)
-
     pg_curs.close()
     pg_conn.close()
 
-    #iframe = visualize_audio_similarities(visual_df, username, api_key, similar_song_ids)
+    iframe = visualize_audio_similarities(visual_df, username, api_key, similar_song_ids)
 
-    #recommendations_list.append({"iframe": iframe})
+    recommendations_list.append({"iframe": iframe})
 
     return jsonify(recommendations_list)
 

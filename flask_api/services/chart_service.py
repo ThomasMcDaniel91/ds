@@ -328,6 +328,6 @@ def visualize_audio_similarities(df, cs_username, cs_api_key, similar_song_ids):
     )
 
     chart_studio.tools.set_credentials_file(username=cs_username, api_key=cs_api_key)
-    embed_var = py.plot(fig, filename = 'pleasedonotbreakk', auto_open=True, fileopt='new')
+    embed_var = py.plot(fig, filename = 'pleasedonotbreakkk', auto_open=True, fileopt='new')
     embed_link = tls.get_embed(embed_var)
     return embed_link
