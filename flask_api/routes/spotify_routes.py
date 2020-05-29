@@ -101,6 +101,8 @@ def recommendations(artist_name, track_name):
 
     features_df = pd.DataFrame(features, index=[0])
 
+    print(features_df)
+
     scaler = load('scaler.joblib')
     audio_feats_scaled = scaler.transform(features_df)
 
@@ -120,10 +122,6 @@ def recommendations(artist_name, track_name):
         pg_curs.execute(query)
         result = pg_curs.fetchall()
 
-        list_of_feats = [result[0][1], result[0][3], result[0][5], result[0][8], result[0][9], result[0][10], # retrieve audio features from the fetched query
-                         result[0][11], result[0][16], result[0][17], result[0][18]]
-        similar_songs_features.append(list_of_feats)
-
         song_id = result[0][7]
 
         artist = result[0][2]
@@ -135,6 +133,10 @@ def recommendations(artist_name, track_name):
                     continue
         if artist == f"['{artist_name}']" and title == track_name:
             continue
+
+        list_of_feats = [result[0][1], result[0][3], result[0][5], result[0][8], result[0][9], result[0][10], # retrieve audio features from the fetched query
+                         result[0][11], result[0][16], result[0][17], result[0][18]]
+        similar_songs_features.append(list_of_feats)
 
         artist_list.append(result[0][2])
         title_list.append(result[0][13])
@@ -179,6 +181,9 @@ def recommendations(artist_name, track_name):
     visual_df = pd.concat(
         [audio_feats_scaled_df, similar_feats_averaged_df, similar_feats_scaled_df, similar_song_features_unscaled,
          audio_feats_df], ignore_index=True)
+
+    print(visual_df)
+    print(similar_song_ids)
 
     iframe = visualize_audio_similarities(visual_df, username, api_key, similar_song_ids)
 
