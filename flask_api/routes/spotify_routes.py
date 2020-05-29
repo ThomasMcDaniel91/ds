@@ -185,12 +185,12 @@ def recommendations(artist_name, track_name):
     print(visual_df)
     print(similar_song_ids)
 
+    pg_curs.close()
+    pg_conn.close()
+
     iframe = visualize_audio_similarities(visual_df, username, api_key, similar_song_ids)
 
     recommendations_list.append({"iframe": iframe})
-
-    pg_curs.close()
-    pg_conn.close()
 
     return jsonify(recommendations_list)
 
